@@ -27,21 +27,7 @@ class LogInViewController: UIViewController {
         contentView.addSubview(passwordTextField)
         contentView.addSubview(logInButton)
         setConstraints()
-        
-        if defaults.value(forKey: "newPassword") == nil && KeyChain.load(key: account) != nil {
-            logInButton.setTitle("Введите пароль", for: .normal)
-        } else {
-            logInButton.setTitle("Создать пароль", for: .normal)
-            contentView.addSubview(confirmTextField)
-            
-            NSLayoutConstraint.activate([
-                confirmTextField.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: basePadding),
-                confirmTextField.centerXAnchor.constraint(equalTo: passwordTextField.centerXAnchor),
-                confirmTextField.heightAnchor.constraint(equalToConstant: 50),
-                confirmTextField.leadingAnchor.constraint(equalTo: passwordTextField.leadingAnchor),
-                confirmTextField.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
-            ])
-        }
+
         defaults.removeObject(forKey: "newPassword")
     }
     
@@ -69,14 +55,37 @@ class LogInViewController: UIViewController {
             passwordTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             passwordTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant:basePadding),
             passwordTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            logInButton.heightAnchor.constraint(equalToConstant: 50),
-            logInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 100),
-            logInButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            logInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: basePadding),
-            logInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            logInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+        
+        if defaults.value(forKey: "newPassword") == nil && KeyChain.load(key: account) != nil {
+            logInButton.setTitle("Введите пароль", for: .normal)
+            NSLayoutConstraint.activate([
+                logInButton.heightAnchor.constraint(equalToConstant: 50),
+                logInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: basePadding),
+                logInButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+                logInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: basePadding),
+                logInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                logInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            ])
+        } else {
+            logInButton.setTitle("Создать пароль", for: .normal)
+            contentView.addSubview(confirmTextField)
+            
+            NSLayoutConstraint.activate([
+                confirmTextField.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: basePadding),
+                confirmTextField.centerXAnchor.constraint(equalTo: passwordTextField.centerXAnchor),
+                confirmTextField.heightAnchor.constraint(equalToConstant: 50),
+                confirmTextField.leadingAnchor.constraint(equalTo: passwordTextField.leadingAnchor),
+                confirmTextField.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
+                
+                logInButton.heightAnchor.constraint(equalToConstant: 50),
+                logInButton.topAnchor.constraint(equalTo: confirmTextField.bottomAnchor, constant: basePadding),
+                logInButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+                logInButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: basePadding),
+                logInButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                logInButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            ])
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -178,7 +187,7 @@ class LogInViewController: UIViewController {
     }()
     
     @objc func loginButtonPressed() {
-        print("Log in button pressed")
+        print("Нажали кнопку логина")
         if let pass = passwordTextField.text, let confirm = confirmTextField.text {
             let loginButtonText = logInButton.titleLabel?.text
             if loginButtonText == "Введите пароль" {
@@ -212,11 +221,11 @@ class LogInViewController: UIViewController {
     
     func checkAccount(pass: String) -> Bool {
         guard let accountPass = KeyChain.load(key: account) else {
-            print("Нет account")
+            print("Аккаунт не создан")
             return false
         }
         let accountPassword = String(decoding: accountPass, as: UTF8.self)
-        print("password is \(accountPassword)")
+        print("Подсказка, пароль: \(accountPassword)")
         return accountPassword  == pass
     }
     
@@ -226,12 +235,12 @@ class LogInViewController: UIViewController {
         saveConfirm(text: confirmTextField.text)
         
         guard let pass1 = KeyChain.load(key: "tempPass") else {
-            print("Нет tempPass")
+            print("Не создан временный пароль")
             return false
         }
         
         guard let conf1 = KeyChain.load(key: "confirmPass") else {
-            print("Нет confirmPass")
+            print("Не создано подтверждение")
             return false
         }
         

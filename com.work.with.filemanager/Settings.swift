@@ -41,11 +41,11 @@ class Settings: UIViewController {
     
     @objc func switchFileSortedStateDidChange(_ sender:UISwitch!) {
         if (sender.isOn == true) {
-            print("UISwitch FileSorted state is now ON")
+            print("Переключатель сортировки файлов включен")
             setUserDefault(.fileSorted, value: true)
         }
         else {
-            print("UISwitch FileSorted state is now Off")
+            print("Переключатель сортировки файлов выключен")
             setUserDefault(.fileSorted, value: false)
         }
     }
@@ -72,11 +72,11 @@ class Settings: UIViewController {
     
     @objc func switchFileSizeShowedStateDidChange(_ sender:UISwitch!) {
         if (sender.isOn == true) {
-            print("UISwitch FileSize state is now ON")
+            print("Переключатель размера файлов включен")
             setUserDefault(.fileSizeShowed, value: true)
         }
         else {
-            print("UISwitch FileSize state is now Off")
+            print("Переключатель размера файлов выключен")
             setUserDefault(.fileSizeShowed, value: false)
         }
     }
@@ -104,7 +104,7 @@ class Settings: UIViewController {
     }
     
     @objc func changePasswordButtonPressed() {
-        print("changePasswordButtonPressed")
+        print("Нажали кнопку смены пароля")
         createNewPassword()
     }
     
@@ -163,11 +163,11 @@ class Settings: UIViewController {
     func setDefaultValues() {
         
         if UserDefaults.standard.object(forKey: "fileSorted") == nil {
-            print("fileSorted is nil")
+            print("Нет значения для сортировки файлов")
             defaults.set(true, forKey: "fileSorted")
         }
         if UserDefaults.standard.object(forKey: "fileSizeShowed") == nil {
-            print("fileSizeShowed is nil")
+            print("Нет значения для размера файлов")
             defaults.set(true, forKey: "fileSizeShowed")
         }
         fileSorted = defaults.object(forKey: "fileSorted") as? Bool ?? true

@@ -28,14 +28,29 @@ class Tabbar: UIViewController, UITabBarDelegate {
         tabBar.selectedItem = item1
 
         view.addSubview(tabBar)
+        view.addSubview(startLabel)
         tabBar.toAutoLayout()
 
         NSLayoutConstraint.activate([
             tabBar.rightAnchor.constraint(equalTo: view.rightAnchor),
             tabBar.leftAnchor.constraint(equalTo: view.leftAnchor),
             tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            startLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            startLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
+    
+    private lazy var startLabel: UILabel = {
+        let label = UILabel()
+        label.toAutoLayout()
+        label.text = "Выберите вкладку"
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.textColor = .systemBlue
+        label.font = UIFont.systemFont(ofSize: 20)
+        return label
+    }()
     
     func tabBar(_ tabBar: UITabBar, willEndCustomizing items: [UITabBarItem], changed: Bool) {
         navigationController?.pushViewController(ViewController(), animated: true)
@@ -52,7 +67,7 @@ class Tabbar: UIViewController, UITabBarDelegate {
             vc.tabBarController?.tabBar.isHidden = false
             navigationController?.pushViewController(vc, animated: true)
         default:
-            fatalError("Unknown tab bar item!")
+            fatalError("Не можем отобразить несуществующую вкладку")
         }
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
+    private let baseConstant: CGFloat = 20
     private let table = UITableView(frame: .zero, style: .grouped)
     let fm = FileManager.default
     
@@ -18,9 +19,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         view.backgroundColor = .white
         
         print(fm.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        setupNavigation()
-        
         table.toAutoLayout()
         table.allowsSelection = false
 
@@ -28,15 +26,51 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         table.dataSource = self
         
         table.backgroundColor = .white
+        view.addSubview(addPhotoButton)
+        view.addSubview(addFolderButton)
         view.addSubview(table)
         
         NSLayoutConstraint.activate([
-            table.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            addPhotoButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: baseConstant),
+            addPhotoButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: baseConstant),
+            
+            addFolderButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: baseConstant),
+            addFolderButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(baseConstant)),
+            
+            table.topAnchor.constraint(equalTo: addFolderButton.bottomAnchor, constant: baseConstant),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
+    
+    private lazy var addPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = false
+        button.clipsToBounds = true
+        button.backgroundColor = .systemPink
+        button.titleLabel!.font = UIFont.systemFont(ofSize: 20)
+        button.setTitle("Добавить фото", for: .normal)
+        button.addTarget(self, action: #selector(btnClicked), for:.touchUpInside)
+        button.toAutoLayout()
+        return button
+    }()
+    
+    private lazy var addFolderButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = false
+        button.clipsToBounds = true
+        button.backgroundColor = .systemPink
+        button.titleLabel!.font = UIFont.systemFont(ofSize: 20)
+        button.setTitle("Создать папку", for: .normal)
+        button.addTarget(self, action: #selector(showAlert), for:.touchUpInside)
+        button.toAutoLayout()
+        return button
+    }()
     
     @objc func showAlert() {
         let ac = UIAlertController(title: "Введите название папки", message: nil, preferredStyle: .alert)
@@ -54,7 +88,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
 
     @objc func btnClicked() {
         if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
-            print("Button capture")
+            print("Кликнули кнопоку добавления фото")
 
             imagePicker.delegate = self
             imagePicker.sourceType = .savedPhotosAlbum
@@ -62,19 +96,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
 
             present(imagePicker, animated: true, completion: nil)
         }
-    }
-    
-    func setupNavigation() {
-        self.navigationController!.navigationBar.barStyle = .default
-        self.navigationController!.navigationBar.isTranslucent = true
-        self.navigationController!.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        self.navigationController!.navigationBar.tintColor = .systemTeal
-        
-        let createFolderItem = UIBarButtonItem(title: "Создать папку", style: .plain, target: self, action: #selector(showAlert))
-        navigationItem.rightBarButtonItem = createFolderItem
-        
-        let takePhotoItem = UIBarButtonItem(title: "Добавить фото", style: .plain, target: self, action: #selector(btnClicked))
-        navigationItem.leftBarButtonItem = takePhotoItem
     }
     
     func createDirectory(name: String) {
@@ -87,7 +108,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
             try fm.createDirectory(atPath: logsPath!.path, withIntermediateDirectories: true, attributes: nil)
             
         } catch let error as NSError {
-            print("Unable to create directory",error)
+            print("Не пошлучилось создать папку",error)
         }
         table.reloadData()
     }
@@ -106,9 +127,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         if let data = data, !FileManager.default.fileExists(atPath: fileURL.path) {
             do {
                 try data.write(to: fileURL)
-                print("file saved")
+                print("Изображение сохранено")
             } catch {
-                print("error saving file:", error)
+                print("Не смогли сохранить изображение:", error)
             }
         }
         table.reloadData()
@@ -158,9 +179,9 @@ extension ViewController: UITableViewDataSource {
         urls = fm.urls(for: .documentDirectory, in: .userDomainMask)
         do {
             urls = try fm.contentsOfDirectory(at: urls[0], includingPropertiesForKeys: nil)
-            print("fileURLsCount: \(urls)")
+            print("Все файлы и папки: \(urls)")
         } catch {
-            print("Error while enumerating files: \(error.localizedDescription)")
+            print("Не получили файлы и папки: \(error.localizedDescription)")
         }
         return urls
     }
