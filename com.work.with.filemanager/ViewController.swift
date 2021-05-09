@@ -14,22 +14,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
+
+        view.backgroundColor = .white
         
         print(fm.urls(for: .documentDirectory, in: .userDomainMask))
         
-        let navBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
-        
-        view.addSubview(navBar)
-
-        let navItem = UINavigationItem(title: "File Manager")
-        let doneItem = UIBarButtonItem(title: "Create directory", style: .plain, target: nil, action: #selector(showAlert))
-        let photoItem = UIBarButtonItem(title: "Take photo", style: .plain, target: nil, action: #selector(btnClicked))
-
-        navItem.rightBarButtonItem = doneItem
-        navItem.leftBarButtonItem = photoItem
-
-        navBar.setItems([navItem], animated: false)
+        setupNavigation()
         
         table.toAutoLayout()
         table.allowsSelection = false
@@ -37,7 +27,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         table.register(UITableViewCell.self, forCellReuseIdentifier: "reuseId")
         table.dataSource = self
         
-        self.navigationController?.navigationBar.isHidden = true
         table.backgroundColor = .white
         view.addSubview(table)
         
@@ -50,7 +39,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     }
     
     @objc func showAlert() {
-        let ac = UIAlertController(title: "Enter directory name", message: nil, preferredStyle: .alert)
+        let ac = UIAlertController(title: "Введите название папки", message: nil, preferredStyle: .alert)
         ac.addTextField()
 
         let submitAction = UIAlertAction(title: "OK", style: .default) { [self, unowned ac] _ in
@@ -64,7 +53,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     var imagePicker = UIImagePickerController()
 
     @objc func btnClicked() {
-
         if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
             print("Button capture")
 
@@ -74,6 +62,19 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
 
             present(imagePicker, animated: true, completion: nil)
         }
+    }
+    
+    func setupNavigation() {
+        self.navigationController!.navigationBar.barStyle = .default
+        self.navigationController!.navigationBar.isTranslucent = true
+        self.navigationController!.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        self.navigationController!.navigationBar.tintColor = .systemTeal
+        
+        let createFolderItem = UIBarButtonItem(title: "Создать папку", style: .plain, target: self, action: #selector(showAlert))
+        navigationItem.rightBarButtonItem = createFolderItem
+        
+        let takePhotoItem = UIBarButtonItem(title: "Добавить фото", style: .plain, target: self, action: #selector(btnClicked))
+        navigationItem.leftBarButtonItem = takePhotoItem
     }
     
     func createDirectory(name: String) {
