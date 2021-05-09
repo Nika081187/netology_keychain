@@ -14,8 +14,6 @@ class LogInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        passwordTextField.delegate = self
-        confirmTextField.delegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -30,7 +28,7 @@ class LogInViewController: UIViewController {
         contentView.addSubview(logInButton)
         setConstraints()
         
-        if KeyChain.load(key: account) != nil {
+        if defaults.value(forKey: "newPassword") == nil && KeyChain.load(key: account) != nil {
             logInButton.setTitle("Введите пароль", for: .normal)
         } else {
             logInButton.setTitle("Создать пароль", for: .normal)
@@ -44,6 +42,7 @@ class LogInViewController: UIViewController {
                 confirmTextField.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor),
             ])
         }
+        defaults.removeObject(forKey: "newPassword")
     }
     
     func setConstraints() {
@@ -173,12 +172,12 @@ class LogInViewController: UIViewController {
         logInButton.clipsToBounds = true
         logInButton.backgroundColor = .cyan
         logInButton.titleLabel!.font = UIFont.systemFont(ofSize: 20)
-        logInButton.addTarget(self, action: #selector(buttonPressed), for:.touchUpInside)
+        logInButton.addTarget(self, action: #selector(loginButtonPressed), for:.touchUpInside)
         logInButton.toAutoLayout()
         return logInButton
     }()
     
-    @objc func buttonPressed() {
+    @objc func loginButtonPressed() {
         print("Log in button pressed")
         if let pass = passwordTextField.text, let confirm = confirmTextField.text {
             let loginButtonText = logInButton.titleLabel?.text
@@ -194,6 +193,10 @@ class LogInViewController: UIViewController {
             if loginButtonText == "Создать пароль" || loginButtonText == "Повторите пароль" {
                 if pass.isEmpty || confirm.isEmpty {
                     errorLabel.text = "Заполните Пароль и Подтверждение"
+                    return
+                }
+                if pass.count != 4 || confirm.count != 4 {
+                    errorLabel.text = "Пароль и Подтверждение должны содержать 4 символа"
                     return
                 }
                 if !checkPassAndConfirm() {
@@ -213,6 +216,7 @@ class LogInViewController: UIViewController {
             return false
         }
         let accountPassword = String(decoding: accountPass, as: UTF8.self)
+        print("password is \(accountPassword)")
         return accountPassword  == pass
     }
     
@@ -238,44 +242,15 @@ class LogInViewController: UIViewController {
             let _ = KeyChain.save(key: account, data: tempPass.data(using: .utf8)!)
             let _ = KeyChain.remove(key: "tempPass")
             let _ = KeyChain.remove(key: "confirmPass")
-            passwordTextField.text = ""
-            confirmTextField.text = ""
             print("Пароль совпал")
             return true
         }
         errorLabel.text = "Пароль и подтверждение на совпадают"
         return false
     }
-}
-
-extension LogInViewController: UITextFieldDelegate {
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
-        if textField.text?.count != 4 {
-            return true
-        }
-
-        guard let text = textField.text else {
-            return true
-        }
-        
-        if checkAccount(pass: text) {
-            return true
-        }
-        
-        if textField.placeholder == "Пароль" {
-            savePassword(text: text)
-        } else if textField.placeholder == "Подтверждение" {
-            saveConfirm(text: text)
-        }
-
-        return text.count <= 4
-    }
     
     func saveConfirm(text: String?) {
-        
-        guard let conf = text else {
+        guard let conf = text, conf.count == 4 else {
             print("Нет подтверждения")
             return
         }
@@ -284,12 +259,10 @@ extension LogInViewController: UITextFieldDelegate {
     }
     
     func savePassword(text: String?) {
-        
-        guard let pass = text else {
+        guard let pass = text, pass.count == 4 else {
             print("Нет пароля")
             return
         }
-        
         let _ = KeyChain.save(key: "tempPass", data: pass.data(using: .utf8)!)
         logInButton.setTitle("Повторите пароль", for: .normal)
         print("Запомнили пароль")

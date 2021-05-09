@@ -7,23 +7,23 @@
 
 import UIKit
 
+let defaults = UserDefaults.standard
+
 class Settings: UIViewController {
     
     enum SettingType: String {
         case fileSorted
         case fileSizeShowed
-        case changePassword
     }
     
     private var fileSorted: Bool = true
     private var fileSizeShowed: Bool = true
-    private var changePassword: String = ""
-    private let defaults = UserDefaults.standard
     
     private lazy var switchFileSorted: UISwitch = {
-        let switchFileSorted = UISwitch(frame:CGRect(x: 150, y: 150, width: 0, height: 0))
+        let switchFileSorted = UISwitch()
         switchFileSorted.addTarget(self, action: #selector(self.switchFileSortedStateDidChange(_:)), for: .valueChanged)
-        switchFileSorted.setOn(true, animated: false)
+        let state = getUserDefault(.fileSorted) as! Bool
+        switchFileSorted.setOn(state, animated: false)
         switchFileSorted.toAutoLayout()
         return switchFileSorted
     }()
@@ -31,8 +31,9 @@ class Settings: UIViewController {
     private lazy var switchFileSortedLabel: UILabel = {
         let label = UILabel()
         label.toAutoLayout()
-        label.text = "switch File Sorted"
+        label.text = "Cортировать файлы по алфавиту"
         label.textAlignment = .left
+        label.numberOfLines = 0
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 20)
         return label
@@ -50,9 +51,10 @@ class Settings: UIViewController {
     }
     
     private lazy var switchFileSizeShowed: UISwitch = {
-        let switchFileSizeShowed = UISwitch(frame:CGRect(x: 150, y: 150, width: 0, height: 0))
+        let switchFileSizeShowed = UISwitch()
         switchFileSizeShowed.addTarget(self, action: #selector(self.switchFileSizeShowedStateDidChange(_:)), for: .valueChanged)
-        switchFileSizeShowed.setOn(true, animated: false)
+        let state = getUserDefault(.fileSizeShowed) as! Bool
+        switchFileSizeShowed.setOn(state, animated: false)
         switchFileSizeShowed.toAutoLayout()
         return switchFileSizeShowed
     }()
@@ -60,7 +62,8 @@ class Settings: UIViewController {
     private lazy var switchFileSizeShowedLabel: UILabel = {
         let label = UILabel()
         label.toAutoLayout()
-        label.text = "switch File Size Showed"
+        label.text = "Показать размер файлов"
+        label.numberOfLines = 0
         label.textAlignment = .left
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 20)
@@ -80,52 +83,72 @@ class Settings: UIViewController {
     
     private lazy var changePasswordButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitleColor(.gray, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = false
         button.clipsToBounds = true
-        button.backgroundColor = .cyan
+        button.backgroundColor = .systemTeal
         button.titleLabel!.font = UIFont.systemFont(ofSize: 20)
         button.addTarget(self, action: #selector(changePasswordButtonPressed), for: .touchUpInside)
+        button.setTitle("Сменить пароль", for: .normal)
         button.toAutoLayout()
         return button
     }()
     
+    func createNewPassword() {
+        defaults.set("123", forKey: "newPassword")
+        let vc = LogInViewController()
+        vc.navigationController?.navigationBar.isHidden = true
+        vc.modalPresentationStyle = .popover
+        navigationController?.pushViewController(vc, animated: false)
+    }
+    
     @objc func changePasswordButtonPressed() {
-        //
+        print("changePasswordButtonPressed")
+        createNewPassword()
     }
     
     override func viewDidLoad() {
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .white
+        self.tabBarController?.tabBar.isHidden = false
         setDefaultValues()
         view.addSubview(switchFileSorted)
         view.addSubview(switchFileSizeShowed)
         view.addSubview(switchFileSortedLabel)
         view.addSubview(switchFileSizeShowedLabel)
+        view.addSubview(changePasswordButton)
         setConstraints()
     }
     
+    let baseConstant: CGFloat = 20
+    
     func setConstraints() {
         NSLayoutConstraint.activate([
-            switchFileSorted.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            switchFileSorted.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            switchFileSorted.heightAnchor.constraint(equalToConstant: 50),
-            switchFileSorted.widthAnchor.constraint(equalToConstant: 50),
+            switchFileSorted.topAnchor.constraint(equalTo: view.topAnchor, constant: baseConstant*5),
+            switchFileSorted.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: baseConstant),
+            switchFileSorted.heightAnchor.constraint(equalToConstant: baseConstant*2),
+            switchFileSorted.widthAnchor.constraint(equalToConstant: baseConstant*2),
             
-            switchFileSizeShowed.topAnchor.constraint(equalTo: switchFileSorted.bottomAnchor, constant: 20),
+            switchFileSizeShowed.topAnchor.constraint(equalTo: switchFileSorted.bottomAnchor, constant: baseConstant),
             switchFileSizeShowed.leadingAnchor.constraint(equalTo: switchFileSorted.leadingAnchor),
-            switchFileSizeShowed.heightAnchor.constraint(equalToConstant: 50),
-            switchFileSizeShowed.widthAnchor.constraint(equalToConstant: 50),
+            switchFileSizeShowed.heightAnchor.constraint(equalToConstant: baseConstant*2),
+            switchFileSizeShowed.widthAnchor.constraint(equalToConstant: baseConstant*2),
             
             switchFileSortedLabel.topAnchor.constraint(equalTo: switchFileSorted.topAnchor),
-            switchFileSortedLabel.leadingAnchor.constraint(equalTo: switchFileSorted.trailingAnchor, constant: 20),
-            switchFileSortedLabel.heightAnchor.constraint(equalToConstant: 50),
+            switchFileSortedLabel.leadingAnchor.constraint(equalTo: switchFileSorted.trailingAnchor, constant: baseConstant),
+            switchFileSortedLabel.heightAnchor.constraint(equalToConstant: baseConstant*2),
             switchFileSortedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
             switchFileSizeShowedLabel.topAnchor.constraint(equalTo: switchFileSizeShowed.topAnchor),
-            switchFileSizeShowedLabel.leadingAnchor.constraint(equalTo: switchFileSizeShowed.trailingAnchor, constant: 20),
-            switchFileSizeShowedLabel.heightAnchor.constraint(equalToConstant: 50),
+            switchFileSizeShowedLabel.leadingAnchor.constraint(equalTo: switchFileSizeShowed.trailingAnchor, constant: baseConstant),
+            switchFileSizeShowedLabel.heightAnchor.constraint(equalToConstant: baseConstant*2),
             switchFileSizeShowedLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            changePasswordButton.topAnchor.constraint(equalTo: switchFileSizeShowedLabel.bottomAnchor, constant: baseConstant),
+            changePasswordButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(baseConstant)),
+            changePasswordButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: baseConstant),
+            changePasswordButton.heightAnchor.constraint(equalToConstant: baseConstant*2),
+            changePasswordButton.widthAnchor.constraint(equalToConstant: baseConstant*5),
         ])
     }
     
@@ -133,9 +156,21 @@ class Settings: UIViewController {
         defaults.set(value, forKey: key.rawValue)
     }
     
+    func getUserDefault(_ key: SettingType) -> Any? {
+        defaults.value(forKey: key.rawValue)
+    }
+    
     func setDefaultValues() {
+        
+        if UserDefaults.standard.object(forKey: "fileSorted") == nil {
+            print("fileSorted is nil")
+            defaults.set(true, forKey: "fileSorted")
+        }
+        if UserDefaults.standard.object(forKey: "fileSizeShowed") == nil {
+            print("fileSizeShowed is nil")
+            defaults.set(true, forKey: "fileSizeShowed")
+        }
         fileSorted = defaults.object(forKey: "fileSorted") as? Bool ?? true
         fileSizeShowed = defaults.object(forKey: "fileSizeShowed") as? Bool ?? true
-        changePassword = defaults.object(forKey: "changePassword") as? String ?? String(decoding: KeyChain.load(key: account)!, as: UTF8.self)
     }
 }

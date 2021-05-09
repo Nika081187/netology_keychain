@@ -18,6 +18,7 @@ class Tabbar: UIViewController, UITabBarDelegate {
     }
 
     func addTabbar() -> Void {
+
         view.backgroundColor = .white
         
         let item1 = UITabBarItem(title: "Файлы", image: nil, tag: 1)
@@ -28,7 +29,7 @@ class Tabbar: UIViewController, UITabBarDelegate {
 
         view.addSubview(tabBar)
         tabBar.toAutoLayout()
-        
+
         NSLayoutConstraint.activate([
             tabBar.rightAnchor.constraint(equalTo: view.rightAnchor),
             tabBar.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -44,11 +45,11 @@ class Tabbar: UIViewController, UITabBarDelegate {
         switch item.title {
         case "Файлы":
             let vc = ViewController()
-            vc.hidesBottomBarWhenPushed = false
+            vc.tabBarController?.tabBar.isHidden = false
             navigationController?.pushViewController(vc, animated: true)
         case "Настройки":
             let vc = Settings()
-            vc.hidesBottomBarWhenPushed = false
+            vc.tabBarController?.tabBar.isHidden = false
             navigationController?.pushViewController(vc, animated: true)
         default:
             fatalError("Unknown tab bar item!")

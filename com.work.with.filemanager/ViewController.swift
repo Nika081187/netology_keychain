@@ -14,7 +14,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.tabBarController?.tabBar.isHidden = false
         view.backgroundColor = .white
         
         print(fm.urls(for: .documentDirectory, in: .userDomainMask))
@@ -137,8 +137,19 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseId", for: indexPath)
-        let row = getFiles()[indexPath.row].path
-        cell.textLabel?.text = (row as NSString).lastPathComponent
+        let allUrls = getFiles()
+        let file = getFilesSorted()[indexPath.row]
+        let fileSizeShowed = defaults.value(forKey: "fileSizeShowed") as? Bool ?? true
+
+        if fileSizeShowed {
+            let attr : NSDictionary? = try! fm.attributesOfItem(atPath: allUrls[indexPath.row].path) as NSDictionary
+            if let _attr = attr {
+                let size = _attr.fileSize()
+                cell.textLabel?.text = "\(file), \(size) bytes"
+            }
+        } else {
+            cell.textLabel?.text = file
+        }
         return cell
     }
     
@@ -152,5 +163,20 @@ extension ViewController: UITableViewDataSource {
             print("Error while enumerating files: \(error.localizedDescription)")
         }
         return urls
+    }
+    
+    func getFilesSorted() -> [String] {
+        let files = getFiles()
+        var filePaths = [String]()
+        for (index, _) in files.enumerated() {
+            filePaths.append((files[index].path as NSString).lastPathComponent)
+        }
+        
+        if defaults.value(forKey: "fileSorted") as? Bool ?? true {
+            filePaths = filePaths.sorted { $0 < $1 }
+        } else {
+            filePaths = filePaths.sorted { $0 > $1 }
+        }
+        return filePaths
     }
 }
