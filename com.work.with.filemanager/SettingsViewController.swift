@@ -9,7 +9,7 @@ import UIKit
 
 let defaults = UserDefaults.standard
 
-class Settings: UIViewController {
+class SettingsViewController: UIViewController {
     
     enum SettingType: String {
         case fileSorted
@@ -95,20 +95,21 @@ class Settings: UIViewController {
         return button
     }()
     
-    func createNewPassword() {
-        defaults.set("123", forKey: "newPassword")
-        let vc = LogInViewController()
-        vc.navigationController?.navigationBar.isHidden = true
-        vc.modalPresentationStyle = .popover
-        navigationController?.pushViewController(vc, animated: false)
-    }
-    
     @objc func changePasswordButtonPressed() {
         print("Нажали кнопку смены пароля")
         createNewPassword()
     }
     
+    func createNewPassword() {
+        defaults.set("123", forKey: "newPassword")
+        let vc = LogInViewController()
+        vc.navigationController?.navigationBar.isHidden = true
+        vc.modalPresentationStyle = .popover
+        present(vc, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
+        title = "Settings"
         view.backgroundColor = .white
         self.tabBarController?.tabBar.isHidden = false
         setDefaultValues()

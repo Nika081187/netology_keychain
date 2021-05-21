@@ -8,26 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		28F131BC262F37280034CE83 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F131BB262F37280034CE83 /* AppDelegate.swift */; };
-		28F131C0262F37280034CE83 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F131BF262F37280034CE83 /* ViewController.swift */; };
+		28F131C0262F37280034CE83 /* FilesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F131BF262F37280034CE83 /* FilesViewController.swift */; };
 		28F131C5262F372A0034CE83 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 28F131C4262F372A0034CE83 /* Assets.xcassets */; };
 		28F131C8262F372A0034CE83 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28F131C6262F372A0034CE83 /* LaunchScreen.storyboard */; };
 		28F4E35926430B4200C59045 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E35826430B4200C59045 /* LogInViewController.swift */; };
 		28F4E35C26430F7F00C59045 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E35B26430F7F00C59045 /* KeychainService.swift */; };
-		28F4E35F2646750900C59045 /* Tabbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E35E2646750900C59045 /* Tabbar.swift */; };
-		28F4E3622646755000C59045 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E3612646755000C59045 /* Settings.swift */; };
+		28F4E35F2646750900C59045 /* MyTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E35E2646750900C59045 /* MyTabBarController.swift */; };
+		28F4E3622646755000C59045 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F4E3612646755000C59045 /* SettingsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		28F131B8262F37280034CE83 /* com.work.with.filemanager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = com.work.with.filemanager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F131BB262F37280034CE83 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		28F131BF262F37280034CE83 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		28F131BF262F37280034CE83 /* FilesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesViewController.swift; sourceTree = "<group>"; };
 		28F131C4262F372A0034CE83 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		28F131C7262F372A0034CE83 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		28F131C9262F372A0034CE83 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		28F4E35826430B4200C59045 /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		28F4E35B26430F7F00C59045 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
-		28F4E35E2646750900C59045 /* Tabbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tabbar.swift; sourceTree = "<group>"; };
-		28F4E3612646755000C59045 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		28F4E35E2646750900C59045 /* MyTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTabBarController.swift; sourceTree = "<group>"; };
+		28F4E3612646755000C59045 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,10 +62,10 @@
 			children = (
 				28F131BB262F37280034CE83 /* AppDelegate.swift */,
 				28F4E35826430B4200C59045 /* LogInViewController.swift */,
-				28F131BF262F37280034CE83 /* ViewController.swift */,
-				28F4E3612646755000C59045 /* Settings.swift */,
+				28F131BF262F37280034CE83 /* FilesViewController.swift */,
+				28F4E3612646755000C59045 /* SettingsViewController.swift */,
 				28F4E35B26430F7F00C59045 /* KeychainService.swift */,
-				28F4E35E2646750900C59045 /* Tabbar.swift */,
+				28F4E35E2646750900C59045 /* MyTabBarController.swift */,
 				28F131C4262F372A0034CE83 /* Assets.xcassets */,
 				28F131C6262F372A0034CE83 /* LaunchScreen.storyboard */,
 				28F131C9262F372A0034CE83 /* Info.plist */,
@@ -143,10 +143,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				28F4E35926430B4200C59045 /* LogInViewController.swift in Sources */,
-				28F131C0262F37280034CE83 /* ViewController.swift in Sources */,
+				28F131C0262F37280034CE83 /* FilesViewController.swift in Sources */,
 				28F131BC262F37280034CE83 /* AppDelegate.swift in Sources */,
-				28F4E35F2646750900C59045 /* Tabbar.swift in Sources */,
-				28F4E3622646755000C59045 /* Settings.swift in Sources */,
+				28F4E35F2646750900C59045 /* MyTabBarController.swift in Sources */,
+				28F4E3622646755000C59045 /* SettingsViewController.swift in Sources */,
 				28F4E35C26430F7F00C59045 /* KeychainService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

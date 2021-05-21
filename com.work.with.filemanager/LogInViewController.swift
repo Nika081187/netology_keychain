@@ -87,12 +87,6 @@ class LogInViewController: UIViewController {
             ])
         }
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -192,7 +186,7 @@ class LogInViewController: UIViewController {
             let loginButtonText = logInButton.titleLabel?.text
             if loginButtonText == "Введите пароль" {
                 if checkAccount(pass: pass) {
-                    navigationController?.pushViewController(Tabbar(), animated: true)
+                    navigationController?.pushViewController(MyTabBarController(), animated: true)
                     return
                 } else {
                     errorLabel.text = "Авторизация не удалась, попробуйте еще раз"
@@ -213,7 +207,8 @@ class LogInViewController: UIViewController {
                     return
                 }
                 if checkPassAndConfirm() {
-                    navigationController?.pushViewController(Tabbar(), animated: true)
+                    dismiss(animated: true, completion: nil)
+                    navigationController?.pushViewController(MyTabBarController(), animated: true)
                 }
             }
         }
@@ -248,13 +243,13 @@ class LogInViewController: UIViewController {
         let confirm = String(decoding: conf1, as: UTF8.self)
         
         if tempPass == confirm {
-            let _ = KeyChain.save(key: account, data: tempPass.data(using: .utf8)!)
+            let _ = KeyChain.save(key: account, value: tempPass)
             let _ = KeyChain.remove(key: "tempPass")
             let _ = KeyChain.remove(key: "confirmPass")
             print("Пароль совпал")
             return true
         }
-        errorLabel.text = "Пароль и подтверждение на совпадают"
+        errorLabel.text = "Пароль и подтверждение не совпадают"
         return false
     }
     
@@ -263,7 +258,7 @@ class LogInViewController: UIViewController {
             print("Нет подтверждения")
             return
         }
-        let _ = KeyChain.save(key: "confirmPass", data: conf.data(using: .utf8)!)
+        let _ = KeyChain.save(key: "confirmPass", value: conf)
         print("Запомнили подтверждение")
     }
     
@@ -272,7 +267,7 @@ class LogInViewController: UIViewController {
             print("Нет пароля")
             return
         }
-        let _ = KeyChain.save(key: "tempPass", data: pass.data(using: .utf8)!)
+        let _ = KeyChain.save(key: "tempPass", value: pass)
         logInButton.setTitle("Повторите пароль", for: .normal)
         print("Запомнили пароль")
     }

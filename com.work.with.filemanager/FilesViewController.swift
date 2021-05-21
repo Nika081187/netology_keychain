@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class FilesViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
     private let baseConstant: CGFloat = 20
     private let table = UITableView(frame: .zero, style: .grouped)
@@ -15,6 +15,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Files"
         self.tabBarController?.tabBar.isHidden = false
         view.backgroundColor = .white
         
@@ -149,7 +150,7 @@ extension UIView {
     }
 }
 
-extension ViewController: UITableViewDataSource {
+extension FilesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rowsCount = getFiles().count
