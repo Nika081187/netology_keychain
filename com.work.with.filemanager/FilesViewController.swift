@@ -7,50 +7,74 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class FilesViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
+    private let baseConstant: CGFloat = 20
     private let table = UITableView(frame: .zero, style: .grouped)
     let fm = FileManager.default
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
+        title = "Files"
+        self.tabBarController?.tabBar.isHidden = false
+        view.backgroundColor = .white
         
         print(fm.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        let navBar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 44))
-        
-        view.addSubview(navBar)
-
-        let navItem = UINavigationItem(title: "File Manager")
-        let doneItem = UIBarButtonItem(title: "Create directory", style: .plain, target: nil, action: #selector(showAlert))
-        let photoItem = UIBarButtonItem(title: "Take photo", style: .plain, target: nil, action: #selector(btnClicked))
-
-        navItem.rightBarButtonItem = doneItem
-        navItem.leftBarButtonItem = photoItem
-
-        navBar.setItems([navItem], animated: false)
-        
         table.toAutoLayout()
         table.allowsSelection = false
 
         table.register(UITableViewCell.self, forCellReuseIdentifier: "reuseId")
         table.dataSource = self
         
-        self.navigationController?.navigationBar.isHidden = true
         table.backgroundColor = .white
+        view.addSubview(addPhotoButton)
+        view.addSubview(addFolderButton)
         view.addSubview(table)
         
         NSLayoutConstraint.activate([
-            table.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            addPhotoButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: baseConstant),
+            addPhotoButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: baseConstant),
+            
+            addFolderButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: baseConstant),
+            addFolderButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -(baseConstant)),
+            
+            table.topAnchor.constraint(equalTo: addFolderButton.bottomAnchor, constant: baseConstant),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
     
+    private lazy var addPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = false
+        button.clipsToBounds = true
+        button.backgroundColor = .systemPink
+        button.titleLabel!.font = UIFont.systemFont(ofSize: 20)
+        button.setTitle("Добавить фото", for: .normal)
+        button.addTarget(self, action: #selector(btnClicked), for:.touchUpInside)
+        button.toAutoLayout()
+        return button
+    }()
+    
+    private lazy var addFolderButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.masksToBounds = false
+        button.clipsToBounds = true
+        button.backgroundColor = .systemPink
+        button.titleLabel!.font = UIFont.systemFont(ofSize: 20)
+        button.setTitle("Создать папку", for: .normal)
+        button.addTarget(self, action: #selector(showAlert), for:.touchUpInside)
+        button.toAutoLayout()
+        return button
+    }()
+    
     @objc func showAlert() {
-        let ac = UIAlertController(title: "Enter directory name", message: nil, preferredStyle: .alert)
+        let ac = UIAlertController(title: "Введите название папки", message: nil, preferredStyle: .alert)
         ac.addTextField()
 
         let submitAction = UIAlertAction(title: "OK", style: .default) { [self, unowned ac] _ in
@@ -64,9 +88,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     var imagePicker = UIImagePickerController()
 
     @objc func btnClicked() {
-
         if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
-            print("Button capture")
+            print("Кликнули кнопоку добавления фото")
 
             imagePicker.delegate = self
             imagePicker.sourceType = .savedPhotosAlbum
@@ -86,7 +109,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
             try fm.createDirectory(atPath: logsPath!.path, withIntermediateDirectories: true, attributes: nil)
             
         } catch let error as NSError {
-            print("Unable to create directory",error)
+            print("Не пошлучилось создать папку",error)
         }
         table.reloadData()
     }
@@ -105,9 +128,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         if let data = data, !FileManager.default.fileExists(atPath: fileURL.path) {
             do {
                 try data.write(to: fileURL)
-                print("file saved")
+                print("Изображение сохранено")
             } catch {
-                print("error saving file:", error)
+                print("Не смогли сохранить изображение:", error)
             }
         }
         table.reloadData()
@@ -119,6 +142,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         saveImage(data: result)
         picker.dismiss(animated: true, completion: nil)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        table.reloadData()
+    }
 }
 
 extension UIView {
@@ -127,7 +154,7 @@ extension UIView {
     }
 }
 
-extension ViewController: UITableViewDataSource {
+extension FilesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rowsCount = getFiles().count
@@ -136,8 +163,19 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseId", for: indexPath)
-        let row = getFiles()[indexPath.row].path
-        cell.textLabel?.text = (row as NSString).lastPathComponent
+        let allUrls = getFiles()
+        let file = getFilesSorted()[indexPath.row]
+        let fileSizeShowed = defaults.value(forKey: "fileSizeShowed") as? Bool ?? true
+
+        if fileSizeShowed {
+            let attr : NSDictionary? = try! fm.attributesOfItem(atPath: allUrls[indexPath.row].path) as NSDictionary
+            if let _attr = attr {
+                let size = _attr.fileSize()
+                cell.textLabel?.text = "\(file), \(size) bytes"
+            }
+        } else {
+            cell.textLabel?.text = file
+        }
         return cell
     }
     
@@ -146,10 +184,25 @@ extension ViewController: UITableViewDataSource {
         urls = fm.urls(for: .documentDirectory, in: .userDomainMask)
         do {
             urls = try fm.contentsOfDirectory(at: urls[0], includingPropertiesForKeys: nil)
-            print("fileURLsCount: \(urls)")
+            print("Все файлы и папки: \(urls)")
         } catch {
-            print("Error while enumerating files: \(error.localizedDescription)")
+            print("Не получили файлы и папки: \(error.localizedDescription)")
         }
         return urls
+    }
+    
+    func getFilesSorted() -> [String] {
+        let files = getFiles()
+        var filePaths = [String]()
+        for (index, _) in files.enumerated() {
+            filePaths.append((files[index].path as NSString).lastPathComponent)
+        }
+        
+        if defaults.value(forKey: "fileSorted") as? Bool ?? true {
+            filePaths = filePaths.sorted { $0 < $1 }
+        } else {
+            filePaths = filePaths.sorted { $0 > $1 }
+        }
+        return filePaths
     }
 }
