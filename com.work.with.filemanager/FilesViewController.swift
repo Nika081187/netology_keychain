@@ -142,6 +142,10 @@ class FilesViewController: UIViewController, UIImagePickerControllerDelegate & U
         saveImage(data: result)
         picker.dismiss(animated: true, completion: nil)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        table.reloadData()
+    }
 }
 
 extension UIView {
